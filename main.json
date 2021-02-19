@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "0.0.0.1",
+    "parameters": { 
+        "vnetaddress": {
+            "type": "string",
+            "defaultValue": "10.10.0.0/16",
+            "metadata": {
+                "description": "description"
+            }
+        },
+        "subnetaddressspaces": {
+            "type": "array",
+            "defaultValue": ["10.10.0.0/24", "10.10.1.0/24", "10.10.2.0/24"],
+            "metadata": {
+                "description": "description"
+            }
+        }
+     },
+     "variables": {
+         "vnetname": "olbvnet",
+         "subnetname": ["web", "app", "db"],
+         "location": "[resourceGroup().location]"
+
+     },
+    "resources": [ 
+        {
+            "name": "[variables('vnetname')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-11-01",
+            "location": "[variables('location')]",
+            "tags": {
+                "displayName": "[variables('vnetname')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetaddress')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetname')[0]]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetaddressspaces')[0]]"
+                        }
+                    },
+                    {
+                    "name": "[variables('subnetname')[1]]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetaddressspaces')[1]]"
+                        }
+                    },
+                    {                      
+                        "name": "[variables('subnetname')[2]]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetaddressspaces')[2]]"
+                        }
+                    }
+                ]
+            }
+        }
+     ]
+  }
