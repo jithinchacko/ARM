@@ -19,7 +19,6 @@
      },
      "variables": {
          "vnetname": "olbvnet",
-         "subnetname": ["web", "app", "db"],
          "location": "[resourceGroup().location]"
 
      },
@@ -37,28 +36,24 @@
                     "addressPrefixes": [
                         "[parameters('vnetaddress')]"
                     ]
-                },
-                "subnets": [
-                    {
-                        "name": "[variables('subnetname')[0]]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetaddressspaces')[0]]"
-                        }
-                    },
-                    {
-                    "name": "[variables('subnetname')[1]]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetaddressspaces')[1]]"
-                        }
-                    },
-                    {                      
-                        "name": "[variables('subnetname')[2]]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetaddressspaces')[2]]"
-                        }
-                    }
-                ]
+                }
+
             }
+        },
+        {
+             "name": "[concat(variables('vnetname'), '/', 'subnet',copyIndex())]",
+             "type": "Microsoft.Network/virtualNetworks/subnets",
+             "apiVersion": "2020-07-01",
+             "properties": {
+                 "addressPrefix": "[parameters('subnetaddressspaces')[copyIndex()]]"
+
+             },
+             "copy": {
+                 "name": "subnetcopy",
+                 "count": "[length(parameters('subnetaddressspaces'))]",
+                 "mode": "serial"
+             },
+             "dependsOn": ["[resourceId('Microsoft.Network/virtualNetworks', variables('vnetname'))]"]
         }
      ]
   }
